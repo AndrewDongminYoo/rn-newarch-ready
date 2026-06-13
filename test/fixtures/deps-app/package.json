@@ -5,6 +5,10 @@
     "react-native": "0.76.3",
     "rn-supported": "1.0.0",
     "rn-legacy": "1.0.0",
-    "plain-lib": "1.0.0"
+    "plain-lib": "1.0.0",
+    "ghost-lib": "1.0.0"
+  },
+  "devDependencies": {
+    "dev-only-tool": "1.0.0"
   }
 }

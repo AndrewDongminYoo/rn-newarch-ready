@@ -31,10 +31,11 @@ function audit(projectDir) {
  */
 function scanDependencies(projectDir) {
   const pkg = readJson(path.join(projectDir, "package.json")) || {};
-  const names = Object.keys({
-    ...(pkg.dependencies || {}),
-    ...(pkg.devDependencies || {}),
-  }).filter((name) => name !== "react-native" && name !== "react");
+  // Runtime dependencies only: New Arch readiness is about what ships in the
+  // app binary, so devDependencies (build/test tooling) are not relevant.
+  const names = Object.keys(pkg.dependencies || {}).filter(
+    (name) => name !== "react-native" && name !== "react",
+  );
 
   return names.map((name) => classifyInstalled(projectDir, name));
 }
@@ -43,7 +44,10 @@ function classifyInstalled(projectDir, name) {
   const depDir = path.join(projectDir, "node_modules", name);
   const depPkg = readJson(path.join(depDir, "package.json"));
   if (!depPkg) {
-    return { name, version: null, status: "unknown" };
+    // Declared but not resolved in node_modules — we cannot classify it. This
+    // is a distinct fact from "native module with no signal" (unknown), so it
+    // gets its own status and does not drive the readiness verdict.
+    return { name, version: null, status: "not-installed" };
   }
   const { status } = classifyDependency(depPkg, {
     hasNativeBuildFiles: hasNativeBuildFiles(depDir),

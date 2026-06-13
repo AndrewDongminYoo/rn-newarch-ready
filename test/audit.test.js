@@ -25,4 +25,16 @@ describe("audit", () => {
     expect(report.project.rnVersion).toBe("0.76.3");
     expect(report.summary.verdict).toBe("needs-review");
   });
+
+  test("a declared dependency that is not installed is reported as not-installed", () => {
+    const report = audit(DEPS_APP);
+
+    expect(statusOf(report, "ghost-lib")).toBe("not-installed");
+  });
+
+  test("devDependencies are excluded from the audit", () => {
+    const report = audit(DEPS_APP);
+
+    expect(statusOf(report, "dev-only-tool")).toBeUndefined();
+  });
 });

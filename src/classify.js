@@ -18,25 +18,11 @@ function classifyDependency(packageJson, opts = {}) {
     return { status: "supported" };
   }
 
-  if (isNativeModule(pkg, opts)) {
+  if (opts.hasNativeBuildFiles) {
     return { status: "unknown" };
   }
 
   return { status: "not-native" };
-}
-
-/**
- * A dependency is treated as a native module if it ships native build files or
- * declares a react-native peer/runtime relationship. codegenConfig is handled
- * separately by the caller as the stronger, positive signal.
- */
-function isNativeModule(pkg, opts) {
-  if (opts.hasNativeBuildFiles) {
-    return true;
-  }
-  const peer = pkg.peerDependencies || {};
-  const deps = pkg.dependencies || {};
-  return Boolean(peer["react-native"] || deps["react-native"] || pkg["react-native"]);
 }
 
 module.exports = { classifyDependency };

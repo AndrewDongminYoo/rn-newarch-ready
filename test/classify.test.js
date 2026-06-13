@@ -32,4 +32,15 @@ describe("classifyDependency", () => {
 
     expect(result.status).toBe("not-native");
   });
+
+  test("a JS-only RN library (react-native peerDep, no native files) is not-native", () => {
+    const packageJson = {
+      name: "react-native-some-js-component",
+      peerDependencies: { "react-native": "*" },
+    };
+
+    const result = classifyDependency(packageJson, { hasNativeBuildFiles: false });
+
+    expect(result.status).toBe("not-native");
+  });
 });
