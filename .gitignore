@@ -5,3 +5,6 @@ coverage/
 
 # Synthetic test fixtures intentionally include a node_modules/ tree; keep it.
 !test/fixtures/**/node_modules/
+
+# Local agent artifacts
+.claude/
