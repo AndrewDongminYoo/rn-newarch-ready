@@ -1,13 +1,22 @@
 "use strict";
 
 const path = require("path");
-const { execFileSync } = require("child_process");
+const { spawnSync } = require("child_process");
 
 const CLI = path.join(__dirname, "..", "src", "cli.js");
 const DEPS_APP = path.join(__dirname, "fixtures", "deps-app");
+const BASIC_APP = path.join(__dirname, "fixtures", "basic-app");
 
 function runCli(args) {
-  return execFileSync("node", [CLI, ...args], { encoding: "utf8" });
+  const r = spawnSync("node", [CLI, ...args], { encoding: "utf8" });
+  if (r.error) throw r.error;
+  return r.stdout;
+}
+
+function runCliRaw(args) {
+  const r = spawnSync("node", [CLI, ...args], { encoding: "utf8" });
+  if (r.error) throw r.error;
+  return r;
 }
 
 describe("cli", () => {
@@ -30,5 +39,15 @@ describe("cli", () => {
     const out = runCli([DEPS_APP, "--offline"]);
 
     expect(out).toMatch(/directory lookup skipped/i);
+  });
+
+  test("exits with code 1 when verdict is needs-review", () => {
+    const r = runCliRaw([DEPS_APP, "--offline"]);
+    expect(r.status).toBe(1);
+  });
+
+  test("exits with code 0 when verdict is ready", () => {
+    const r = runCliRaw([BASIC_APP, "--offline"]);
+    expect(r.status).toBe(0);
   });
 });

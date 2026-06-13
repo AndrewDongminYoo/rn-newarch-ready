@@ -21,6 +21,10 @@ async function main(argv) {
   } else {
     process.stdout.write(`${formatReport(report)}\n`);
   }
+
+  if (report.summary.verdict === "needs-review") {
+    process.exitCode = 1;
+  }
 }
 
 function formatReport(report) {
