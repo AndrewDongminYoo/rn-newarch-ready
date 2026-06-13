@@ -1,0 +1,7 @@
+# Custom Dictionary Words
+codegen
+ifdef
+jvmargs
+newarch
+notifee
+Podfile
