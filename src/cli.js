@@ -47,6 +47,15 @@ function formatReport(report) {
     lines.push("");
   }
 
+  const localNative = report.localNativeModules || [];
+  if (localNative.length > 0) {
+    lines.push("App-local native modules using only legacy APIs (migrate to TurboModule/Fabric):");
+    for (const mod of localNative) {
+      lines.push(`  - ${mod.path} [${mod.signals.join(", ")}]`);
+    }
+    lines.push("");
+  }
+
   const likely = dependencies.filter((d) => d.status === "likely-supported");
   if (likely.length > 0) {
     lines.push("Likely supported per RN Directory (library-level — confirm your installed version):");

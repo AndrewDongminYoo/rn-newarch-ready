@@ -6,6 +6,7 @@ const path = require("path");
 const { detectProject } = require("./detect");
 const { classifyDependency } = require("./classify");
 const { enrichDependency } = require("./enrich");
+const { scanLocalNativeModules } = require("./nativeScan");
 const { summarize } = require("./report");
 
 /**
@@ -24,8 +25,11 @@ function audit(projectDir, opts = {}) {
   const dependencies = scanDependencies(projectDir).map((dep) =>
     enrichDependency(dep, directory ? directory.get(dep.name) : null),
   );
-  const summary = summarize(dependencies);
-  return { project, dependencies, summary };
+  const localNativeModules = scanLocalNativeModules(projectDir);
+  const summary = summarize(dependencies, {
+    localNativeModules: localNativeModules.length,
+  });
+  return { project, dependencies, localNativeModules, summary };
 }
 
 /**

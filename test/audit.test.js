@@ -4,6 +4,7 @@ const path = require("path");
 const { audit } = require("../src/index");
 
 const DEPS_APP = path.join(__dirname, "fixtures", "deps-app");
+const NATIVE_APP = path.join(__dirname, "fixtures", "native-app");
 
 function statusOf(report, name) {
   const dep = report.dependencies.find((d) => d.name === name);
@@ -54,5 +55,12 @@ describe("audit", () => {
 
     expect(dep.archived).toBe(true);
     expect(dep.status).toBe("unknown");
+  });
+
+  test("reports app-local legacy native modules, which drive the verdict", () => {
+    const report = audit(NATIVE_APP);
+
+    expect(report.localNativeModules.length).toBe(2);
+    expect(report.summary.verdict).toBe("needs-review");
   });
 });

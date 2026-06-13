@@ -45,6 +45,10 @@ npx rn-newarch-ready --offline       # skip the directory lookup (local signals 
   dataset lags real support), so the dependency stays `unknown`.
 - **Maintenance signal** — native dependencies the directory marks archived are flagged separately
   (`archived`), since an unmaintained library is a migration risk regardless of its New Arch state.
+- **App-local native modules** — your project's own `android/` and `ios/` native source is scanned
+  for modules that use only legacy APIs (`ReactContextBaseJavaModule`, `RCT_EXPORT_MODULE`, …) and
+  carry no New Architecture marker. These are reported as migration candidates, with the matched
+  signals, for manual review.
 
 The roll-up verdict is `ready` (every native dependency locally confirmed — no `unknown` or
 `likely-supported`) or `needs-review`. Archived libraries are surfaced as a separate maintenance
@@ -65,8 +69,9 @@ offline, the audit degrades to local signals only and says so.
 
 ## Status
 
-Early-stage (`0.x`). The report shape may change. Local native-module legacy-API scanning and
-iOS/Expo New Arch detection are planned but not yet implemented.
+Early-stage (`0.x`). The report shape may change. Detection covers Android/iOS/Expo New Arch state,
+dependency classification with directory enrichment, and app-local native-module scanning;
+dependency-side native legacy scanning and richer verdict tiers are not yet implemented.
 
 ## Development
 

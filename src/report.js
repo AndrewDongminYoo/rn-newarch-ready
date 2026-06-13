@@ -8,9 +8,11 @@
  * dependency yields "needs-review", never a false-confident failure.
  *
  * @param {Array<{ name: string, status: string, archived?: boolean }>} dependencies
- * @returns {{ counts: Record<string, number>, archived: number, verdict: "ready" | "needs-review" }}
+ * @param {object} [opts]
+ * @param {number} [opts.localNativeModules] - count of app-local legacy native modules
+ * @returns {{ counts: Record<string, number>, archived: number, localNativeModules: number, verdict: "ready" | "needs-review" }}
  */
-function summarize(dependencies) {
+function summarize(dependencies, opts = {}) {
   const counts = {};
   let archived = 0;
   for (const dep of dependencies) {
@@ -20,14 +22,20 @@ function summarize(dependencies) {
     }
   }
 
+  const localNativeModules = opts.localNativeModules || 0;
+
   // `ready` requires every native dep to be locally confirmed. `unknown` (no
   // signal) and `likely-supported` (directory-only, library-level — verify the
-  // installed version) both warrant review. archived is a maintenance warning,
-  // orthogonal to readiness, and does not by itself flip the verdict.
-  const needsReview = (counts.unknown || 0) > 0 || (counts["likely-supported"] || 0) > 0;
+  // installed version) both warrant review, as do app-local legacy native
+  // modules. archived is a maintenance warning, orthogonal to readiness, and
+  // does not by itself flip the verdict.
+  const needsReview =
+    (counts.unknown || 0) > 0 ||
+    (counts["likely-supported"] || 0) > 0 ||
+    localNativeModules > 0;
   const verdict = needsReview ? "needs-review" : "ready";
 
-  return { counts, archived, verdict };
+  return { counts, archived, localNativeModules, verdict };
 }
 
 module.exports = { summarize };

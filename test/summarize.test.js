@@ -42,6 +42,12 @@ describe("summarize", () => {
     expect(result.counts["likely-supported"]).toBe(1);
   });
 
+  test("app-local legacy native modules drive needs-review", () => {
+    const result = summarize([{ name: "a", status: "supported" }], { localNativeModules: 1 });
+
+    expect(result.verdict).toBe("needs-review");
+  });
+
   test("counts archived dependencies but keeps the verdict about readiness only", () => {
     const result = summarize([
       { name: "a", status: "supported", archived: true },
