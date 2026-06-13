@@ -1,6 +1,6 @@
 {
   "name": "rn-newarch-ready",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Read-only React Native New Architecture readiness audit — reports which dependencies and native modules block enabling the New Architecture. For React Native.",
   "keywords": [
     "react-native",
@@ -10,6 +10,14 @@
     "audit",
     "codegen"
   ],
+  "author": "Dongmin, Yoo <ydm2790@gmail.com> (https://github.com/AndrewDongminYoo)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AndrewDongminYoo/rn-newarch-ready.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AndrewDongminYoo/rn-newarch-ready/issues"
+  },
   "license": "MIT",
   "type": "commonjs",
   "bin": {
