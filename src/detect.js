@@ -18,8 +18,8 @@ function detectProject(projectDir) {
     rnVersion: detectRnVersion(projectDir),
     newArchEnabled: {
       android: detectAndroidNewArch(projectDir),
-      ios: null,
-      expo: null,
+      ios: detectIosNewArch(projectDir),
+      expo: detectExpoNewArch(projectDir),
     },
   };
 }
@@ -48,6 +48,44 @@ function detectAndroidNewArch(projectDir) {
     return null;
   }
   return match[1] === "true";
+}
+
+function detectExpoNewArch(projectDir) {
+  // app.config.js/.ts are executable and not statically parsed here; app.json /
+  // app.config.json cover the common static case.
+  for (const file of ["app.json", "app.config.json"]) {
+    const config = readJson(path.join(projectDir, file));
+    if (!config) {
+      continue;
+    }
+    const expo = config.expo || config;
+    if (typeof expo.newArchEnabled === "boolean") {
+      return expo.newArchEnabled;
+    }
+  }
+  return null;
+}
+
+function detectIosNewArch(projectDir) {
+  const props = readJson(path.join(projectDir, "ios", "Podfile.properties.json"));
+  if (props && props.newArchEnabled != null) {
+    return props.newArchEnabled === true || props.newArchEnabled === "true";
+  }
+
+  for (const file of [".xcode.env.local", ".xcode.env"]) {
+    const env = readFile(path.join(projectDir, "ios", file));
+    const match = env && env.match(/RCT_NEW_ARCH_ENABLED\s*=\s*(\d)/);
+    if (match) {
+      return match[1] === "1";
+    }
+  }
+
+  const podfile = readFile(path.join(projectDir, "ios", "Podfile"));
+  if (podfile && /:new_arch_enabled\s*=>\s*true/.test(podfile)) {
+    return true;
+  }
+
+  return null;
 }
 
 function normalizeVersion(range) {
