@@ -56,6 +56,14 @@ async function fetchDirectoryIndex(opts = {}) {
     }
     const data = await res.json();
     const libraries = data.libraries || [];
+    if (typeof data.total === "number" && libraries.length < data.total) {
+      // No silent caps: if the ?limit ever truncates the dataset, say so —
+      // the dropped libraries would otherwise read as `unknown`.
+      process.stderr.write(
+        `rn-newarch-ready: directory returned ${libraries.length} of ${data.total} ` +
+          `libraries; some may be missing from enrichment.\n`,
+      );
+    }
     writeCache(cacheFile, libraries);
     return buildDirectoryIndex(libraries);
   } catch {
