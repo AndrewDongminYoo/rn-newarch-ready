@@ -37,4 +37,22 @@ describe("audit", () => {
 
     expect(statusOf(report, "dev-only-tool")).toBeUndefined();
   });
+
+  test("directory data promotes an unknown native dep marked newArchitecture=true", () => {
+    const directory = new Map([["rn-legacy", { newArchitecture: true, isArchived: false }]]);
+
+    const report = audit(DEPS_APP, { directory });
+
+    expect(statusOf(report, "rn-legacy")).toBe("supported");
+  });
+
+  test("directory archived status is surfaced on the dependency", () => {
+    const directory = new Map([["rn-legacy", { newArchitecture: false, isArchived: true }]]);
+
+    const report = audit(DEPS_APP, { directory });
+    const dep = report.dependencies.find((d) => d.name === "rn-legacy");
+
+    expect(dep.archived).toBe(true);
+    expect(dep.status).toBe("unknown");
+  });
 });

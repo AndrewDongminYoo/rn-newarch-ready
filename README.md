@@ -20,6 +20,7 @@ npm install --save-dev rn-newarch-ready
 npx rn-newarch-ready                 # audit the current project, human-readable
 npx rn-newarch-ready ./path/to/app   # audit a specific project
 npx rn-newarch-ready --json          # machine-readable report
+npx rn-newarch-ready --offline       # skip the directory lookup (local signals only)
 ```
 
 ## What it checks (v1)
@@ -30,17 +31,29 @@ npx rn-newarch-ready --json          # machine-readable report
   - `supported` — ships a `codegenConfig` (a strong, local, network-free signal of New Arch
     support).
   - `unknown` — a native module with no `codegenConfig` signal. **Never reported as
-    "unsupported"** — absence of a signal is not proof of incompatibility; review it manually.
+    "unsupported"** — absence of a signal is not proof of incompatibility; verify it manually.
   - `not-native` — no native footprint; irrelevant to the migration.
+  - `not-installed` — declared but not resolved in `node_modules`; cannot be classified.
+- **Directory enrichment** — unless `--offline`, `unknown` native dependencies are cross-checked
+  against the public [React Native Directory](https://reactnative.directory) dataset (fetched once
+  and cached). A dependency the directory marks `newArchitecture: true` is promoted to `supported`.
+  A directory `false`/absent flag never produces a confident failure (the dataset lags real
+  support), so the dependency stays `unknown`.
+- **Maintenance signal** — native dependencies the directory marks archived are flagged separately
+  (`archived`), since an unmaintained library is a migration risk regardless of its New Arch state.
 
-The roll-up verdict is `ready` (no unknown native dependencies) or `needs-review`.
+The roll-up verdict is `ready` (no unknown or archived native dependencies) or `needs-review`.
+
+Compatibility and maintenance facts come from the React Native Directory
+(`react-native-community/directory`); this tool reads that public data and attributes it. When
+offline, the audit degrades to local signals only and says so.
 
 ## Design notes
 
 - **Conservative by default.** A positive signal yields `supported`; the absence of one yields
   `unknown`, never a false-confident failure.
 - **Local-first.** Classification reads `codegenConfig` from `node_modules` — no network required.
-  A future enrichment step may consult published compatibility data for `unknown` dependencies.
+  The directory enrichment is an additive, cached lookup layered on top, and `--offline` skips it.
 - **Static analysis has limits.** Dynamically registered native modules and non-standard layouts
   may not be detected; the report states what it could not determine rather than guessing.
 

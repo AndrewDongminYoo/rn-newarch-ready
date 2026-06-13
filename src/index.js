@@ -5,21 +5,25 @@ const path = require("path");
 
 const { detectProject } = require("./detect");
 const { classifyDependency } = require("./classify");
+const { enrichDependency } = require("./enrich");
 const { summarize } = require("./report");
 
 /**
  * Run a read-only New Architecture readiness audit on an RN project.
  *
  * @param {string} projectDir - absolute path to the RN project root
- * @returns {{
- *   project: object,
- *   dependencies: Array<{ name: string, version: string|null, status: string }>,
- *   summary: object
- * }}
+ * @param {object} [opts]
+ * @param {Map<string, object>} [opts.directory] - React Native Directory index
+ *   (npm name -> { newArchitecture, isArchived }); when provided, unknown native
+ *   deps may be promoted and archived deps flagged. Omitted -> local signals only.
+ * @returns {{ project: object, dependencies: Array<object>, summary: object }}
  */
-function audit(projectDir) {
+function audit(projectDir, opts = {}) {
   const project = detectProject(projectDir);
-  const dependencies = scanDependencies(projectDir);
+  const directory = opts.directory || null;
+  const dependencies = scanDependencies(projectDir).map((dep) =>
+    enrichDependency(dep, directory ? directory.get(dep.name) : null),
+  );
   const summary = summarize(dependencies);
   return { project, dependencies, summary };
 }

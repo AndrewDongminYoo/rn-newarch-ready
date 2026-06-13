@@ -31,4 +31,14 @@ describe("summarize", () => {
 
     expect(result.verdict).toBe("ready");
   });
+
+  test("counts archived dependencies and flags needs-review even when all are supported", () => {
+    const result = summarize([
+      { name: "a", status: "supported", archived: true },
+      { name: "b", status: "not-native", archived: false },
+    ]);
+
+    expect(result.archived).toBe(1);
+    expect(result.verdict).toBe("needs-review");
+  });
 });

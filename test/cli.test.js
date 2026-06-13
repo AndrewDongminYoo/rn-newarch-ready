@@ -12,7 +12,7 @@ function runCli(args) {
 
 describe("cli", () => {
   test("--json prints the machine-readable report", () => {
-    const out = runCli([DEPS_APP, "--json"]);
+    const out = runCli([DEPS_APP, "--json", "--offline"]);
     const report = JSON.parse(out);
 
     expect(report.summary.verdict).toBe("needs-review");
@@ -20,9 +20,15 @@ describe("cli", () => {
   });
 
   test("default output is human-readable and names the verdict", () => {
-    const out = runCli([DEPS_APP]);
+    const out = runCli([DEPS_APP, "--offline"]);
 
     expect(out).toMatch(/needs-review/);
     expect(out).toMatch(/rn-legacy/);
+  });
+
+  test("--offline notes that the directory lookup was skipped", () => {
+    const out = runCli([DEPS_APP, "--offline"]);
+
+    expect(out).toMatch(/directory lookup skipped/i);
   });
 });
