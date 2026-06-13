@@ -39,7 +39,9 @@ function detectRnVersion(projectDir) {
 }
 
 function detectAndroidNewArch(projectDir) {
-  const content = readFile(path.join(projectDir, "android", "gradle.properties"));
+  const content = readFile(
+    path.join(projectDir, "android", "gradle.properties"),
+  );
   if (content === null) {
     return null;
   }
@@ -67,7 +69,9 @@ function detectExpoNewArch(projectDir) {
 }
 
 function detectIosNewArch(projectDir) {
-  const props = readJson(path.join(projectDir, "ios", "Podfile.properties.json"));
+  const props = readJson(
+    path.join(projectDir, "ios", "Podfile.properties.json"),
+  );
   if (props && props.newArchEnabled != null) {
     return props.newArchEnabled === true || props.newArchEnabled === "true";
   }
@@ -89,7 +93,9 @@ function detectIosNewArch(projectDir) {
 }
 
 function normalizeVersion(range) {
-  return String(range).replace(/^[\^~>=<\s]+/, "").trim();
+  return String(range)
+    .replace(/^[\^~>=<\s]+/, "")
+    .trim();
 }
 
 function readFile(filePath) {

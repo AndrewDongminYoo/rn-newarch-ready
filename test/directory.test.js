@@ -5,8 +5,14 @@ const { buildDirectoryIndex } = require("../src/directory");
 describe("buildDirectoryIndex", () => {
   test("indexes libraries by npm package name with their New Arch and archived flags", () => {
     const index = buildDirectoryIndex([
-      { npmPkg: "react-native-screens", github: { newArchitecture: true, isArchived: false } },
-      { npmPkg: "@notifee/react-native", github: { newArchitecture: false, isArchived: true } },
+      {
+        npmPkg: "react-native-screens",
+        github: { newArchitecture: true, isArchived: false },
+      },
+      {
+        npmPkg: "@notifee/react-native",
+        github: { newArchitecture: false, isArchived: true },
+      },
     ]);
 
     expect(index.get("react-native-screens")).toEqual({

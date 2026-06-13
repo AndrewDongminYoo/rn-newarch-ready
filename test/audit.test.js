@@ -40,7 +40,9 @@ describe("audit", () => {
   });
 
   test("directory data promotes an unknown native dep marked newArchitecture=true to likely-supported", () => {
-    const directory = new Map([["rn-legacy", { newArchitecture: true, isArchived: false }]]);
+    const directory = new Map([
+      ["rn-legacy", { newArchitecture: true, isArchived: false }],
+    ]);
 
     const report = audit(DEPS_APP, { directory });
 
@@ -48,7 +50,9 @@ describe("audit", () => {
   });
 
   test("directory archived status is surfaced on the dependency", () => {
-    const directory = new Map([["rn-legacy", { newArchitecture: false, isArchived: true }]]);
+    const directory = new Map([
+      ["rn-legacy", { newArchitecture: false, isArchived: true }],
+    ]);
 
     const report = audit(DEPS_APP, { directory });
     const dep = report.dependencies.find((d) => d.name === "rn-legacy");

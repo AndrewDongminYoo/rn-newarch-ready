@@ -11,7 +11,11 @@ describe("summarize", () => {
       { name: "d", status: "not-native" },
     ]);
 
-    expect(result.counts).toEqual({ supported: 2, unknown: 1, "not-native": 1 });
+    expect(result.counts).toEqual({
+      supported: 2,
+      unknown: 1,
+      "not-native": 1,
+    });
   });
 
   test("verdict is needs-review when any native dependency is unknown", () => {
@@ -43,7 +47,9 @@ describe("summarize", () => {
   });
 
   test("app-local legacy native modules drive needs-review", () => {
-    const result = summarize([{ name: "a", status: "supported" }], { localNativeModules: 1 });
+    const result = summarize([{ name: "a", status: "supported" }], {
+      localNativeModules: 1,
+    });
 
     expect(result.verdict).toBe("needs-review");
   });

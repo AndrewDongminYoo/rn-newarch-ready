@@ -40,7 +40,9 @@ function formatReport(report) {
 
   const archived = dependencies.filter((d) => d.archived);
   if (archived.length > 0) {
-    lines.push("Archived / unmaintained native dependencies (plan a replacement):");
+    lines.push(
+      "Archived / unmaintained native dependencies (plan a replacement):",
+    );
     for (const dep of archived) {
       lines.push(`  - ${dep.name}@${dep.version || "?"}`);
     }
@@ -49,7 +51,9 @@ function formatReport(report) {
 
   const localNative = report.localNativeModules || [];
   if (localNative.length > 0) {
-    lines.push("App-local native modules using only legacy APIs (migrate to TurboModule/Fabric):");
+    lines.push(
+      "App-local native modules using only legacy APIs (migrate to TurboModule/Fabric):",
+    );
     for (const mod of localNative) {
       lines.push(`  - ${mod.path} [${mod.signals.join(", ")}]`);
     }
@@ -58,7 +62,9 @@ function formatReport(report) {
 
   const likely = dependencies.filter((d) => d.status === "likely-supported");
   if (likely.length > 0) {
-    lines.push("Likely supported per RN Directory (library-level — confirm your installed version):");
+    lines.push(
+      "Likely supported per RN Directory (library-level — confirm your installed version):",
+    );
     for (const dep of likely) {
       lines.push(`  - ${dep.name}@${dep.version || "?"}`);
     }
@@ -67,7 +73,9 @@ function formatReport(report) {
 
   const unknown = dependencies.filter((d) => d.status === "unknown");
   if (unknown.length > 0) {
-    lines.push("Native dependencies we couldn't auto-confirm (verify via reactnative.directory or the library docs):");
+    lines.push(
+      "Native dependencies we couldn't auto-confirm (verify via reactnative.directory or the library docs):",
+    );
     for (const dep of unknown) {
       lines.push(`  - ${dep.name}@${dep.version || "?"}`);
     }

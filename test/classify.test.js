@@ -9,7 +9,9 @@ describe("classifyDependency", () => {
       codegenConfig: { name: "RNSomethingSpec", type: "modules" },
     };
 
-    const result = classifyDependency(packageJson, { hasNativeBuildFiles: true });
+    const result = classifyDependency(packageJson, {
+      hasNativeBuildFiles: true,
+    });
 
     expect(result.status).toBe("supported");
   });
@@ -20,7 +22,9 @@ describe("classifyDependency", () => {
       peerDependencies: { "react-native": "*" },
     };
 
-    const result = classifyDependency(packageJson, { hasNativeBuildFiles: true });
+    const result = classifyDependency(packageJson, {
+      hasNativeBuildFiles: true,
+    });
 
     expect(result.status).toBe("unknown");
   });
@@ -28,7 +32,9 @@ describe("classifyDependency", () => {
   test("a package with no native footprint is classified not-native", () => {
     const packageJson = { name: "lodash" };
 
-    const result = classifyDependency(packageJson, { hasNativeBuildFiles: false });
+    const result = classifyDependency(packageJson, {
+      hasNativeBuildFiles: false,
+    });
 
     expect(result.status).toBe("not-native");
   });
@@ -39,7 +45,9 @@ describe("classifyDependency", () => {
       peerDependencies: { "react-native": "*" },
     };
 
-    const result = classifyDependency(packageJson, { hasNativeBuildFiles: false });
+    const result = classifyDependency(packageJson, {
+      hasNativeBuildFiles: false,
+    });
 
     expect(result.status).toBe("not-native");
   });

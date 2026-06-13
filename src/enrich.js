@@ -26,7 +26,12 @@ function enrichDependency(local, entry) {
   const archived = Boolean(isNative && entry && entry.isArchived === true);
 
   if (local.status === "unknown" && entry && entry.newArchitecture === true) {
-    return { ...local, status: "likely-supported", source: "directory", archived };
+    return {
+      ...local,
+      status: "likely-supported",
+      source: "directory",
+      archived,
+    };
   }
 
   return { ...local, archived };
