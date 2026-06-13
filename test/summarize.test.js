@@ -1,0 +1,34 @@
+"use strict";
+
+const { summarize } = require("../src/report");
+
+describe("summarize", () => {
+  test("counts dependencies by status", () => {
+    const result = summarize([
+      { name: "a", status: "supported" },
+      { name: "b", status: "supported" },
+      { name: "c", status: "unknown" },
+      { name: "d", status: "not-native" },
+    ]);
+
+    expect(result.counts).toEqual({ supported: 2, unknown: 1, "not-native": 1 });
+  });
+
+  test("verdict is needs-review when any native dependency is unknown", () => {
+    const result = summarize([
+      { name: "a", status: "supported" },
+      { name: "c", status: "unknown" },
+    ]);
+
+    expect(result.verdict).toBe("needs-review");
+  });
+
+  test("verdict is ready when every native dependency is supported", () => {
+    const result = summarize([
+      { name: "a", status: "supported" },
+      { name: "d", status: "not-native" },
+    ]);
+
+    expect(result.verdict).toBe("ready");
+  });
+});

@@ -1,0 +1,7 @@
+node_modules/
+coverage/
+*.log
+.DS_Store
+
+# Synthetic test fixtures intentionally include a node_modules/ tree; keep it.
+!test/fixtures/**/node_modules/

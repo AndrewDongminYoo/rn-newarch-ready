@@ -1,0 +1,10 @@
+{
+  "name": "deps-app",
+  "version": "1.0.0",
+  "dependencies": {
+    "react-native": "0.76.3",
+    "rn-supported": "1.0.0",
+    "rn-legacy": "1.0.0",
+    "plain-lib": "1.0.0"
+  }
+}

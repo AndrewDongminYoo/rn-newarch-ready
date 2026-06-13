@@ -1,0 +1,39 @@
+{
+  "name": "rn-newarch-ready",
+  "version": "0.0.0",
+  "description": "Read-only React Native New Architecture readiness audit — reports which dependencies and native modules block enabling the New Architecture. For React Native.",
+  "keywords": [
+    "react-native",
+    "new-architecture",
+    "turbomodule",
+    "fabric",
+    "audit",
+    "codegen"
+  ],
+  "license": "MIT",
+  "type": "commonjs",
+  "bin": {
+    "rn-newarch-ready": "src/cli.js"
+  },
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "<rootDir>/test/fixtures/"
+    ]
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
