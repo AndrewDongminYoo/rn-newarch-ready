@@ -32,13 +32,15 @@ describe("summarize", () => {
     expect(result.verdict).toBe("ready");
   });
 
-  test("counts archived dependencies and flags needs-review even when all are supported", () => {
+  test("counts archived dependencies but keeps the verdict about readiness only", () => {
     const result = summarize([
       { name: "a", status: "supported", archived: true },
       { name: "b", status: "not-native", archived: false },
     ]);
 
     expect(result.archived).toBe(1);
-    expect(result.verdict).toBe("needs-review");
+    // archived is a maintenance warning, orthogonal to New Arch readiness — it
+    // does not by itself flip the verdict.
+    expect(result.verdict).toBe("ready");
   });
 });

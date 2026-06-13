@@ -20,7 +20,9 @@ function summarize(dependencies) {
     }
   }
 
-  const verdict = (counts.unknown || 0) > 0 || archived > 0 ? "needs-review" : "ready";
+  // archived is a maintenance warning, orthogonal to New Arch readiness; it is
+  // surfaced separately and does not by itself flip the verdict.
+  const verdict = (counts.unknown || 0) > 0 ? "needs-review" : "ready";
 
   return { counts, archived, verdict };
 }
