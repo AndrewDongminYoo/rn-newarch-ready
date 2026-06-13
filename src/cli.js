@@ -47,6 +47,15 @@ function formatReport(report) {
     lines.push("");
   }
 
+  const likely = dependencies.filter((d) => d.status === "likely-supported");
+  if (likely.length > 0) {
+    lines.push("Likely supported per RN Directory (library-level — confirm your installed version):");
+    for (const dep of likely) {
+      lines.push(`  - ${dep.name}@${dep.version || "?"}`);
+    }
+    lines.push("");
+  }
+
   const unknown = dependencies.filter((d) => d.status === "unknown");
   if (unknown.length > 0) {
     lines.push("Native dependencies we couldn't auto-confirm (verify via reactnative.directory or the library docs):");
@@ -58,8 +67,8 @@ function formatReport(report) {
 
   const c = summary.counts;
   lines.push(
-    `Summary: ${c.supported || 0} supported, ${c.unknown || 0} unknown, ` +
-      `${c["not-native"] || 0} non-native, ${summary.archived} archived`,
+    `Summary: ${c.supported || 0} supported, ${c["likely-supported"] || 0} likely, ` +
+      `${c.unknown || 0} unknown, ${c["not-native"] || 0} non-native, ${summary.archived} archived`,
   );
   lines.push(`Verdict: ${summary.verdict}`);
   return lines.join("\n");

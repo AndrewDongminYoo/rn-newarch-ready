@@ -32,6 +32,16 @@ describe("summarize", () => {
     expect(result.verdict).toBe("ready");
   });
 
+  test("a likely-supported (directory) dep is not counted as ready — verdict needs-review", () => {
+    const result = summarize([
+      { name: "a", status: "supported" },
+      { name: "b", status: "likely-supported" },
+    ]);
+
+    expect(result.verdict).toBe("needs-review");
+    expect(result.counts["likely-supported"]).toBe(1);
+  });
+
   test("counts archived dependencies but keeps the verdict about readiness only", () => {
     const result = summarize([
       { name: "a", status: "supported", archived: true },

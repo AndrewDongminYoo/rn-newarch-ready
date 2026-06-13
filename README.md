@@ -33,16 +33,22 @@ npx rn-newarch-ready --offline       # skip the directory lookup (local signals 
   - `unknown` — a native module with no `codegenConfig` signal. **Never reported as
     "unsupported"** — absence of a signal is not proof of incompatibility; verify it manually.
   - `not-native` — no native footprint; irrelevant to the migration.
+  - `likely-supported` — no local signal, but the directory marks it New Arch ready (see below).
   - `not-installed` — declared but not resolved in `node_modules`; cannot be classified.
 - **Directory enrichment** — unless `--offline`, `unknown` native dependencies are cross-checked
   against the public [React Native Directory](https://reactnative.directory) dataset (fetched once
-  and cached). A dependency the directory marks `newArchitecture: true` is promoted to `supported`.
-  A directory `false`/absent flag never produces a confident failure (the dataset lags real
-  support), so the dependency stays `unknown`.
+  and cached). A dependency the directory marks `newArchitecture: true` is promoted to
+  `likely-supported` — a **distinct, softer tier** than locally-confirmed `supported`. The
+  directory flag is library-level (it reflects the repo, not your pinned version) and curated, so
+  the tool reports it separately and asks you to confirm the installed version rather than counting
+  it as confirmed-ready. A directory `false`/absent flag never produces a confident failure (the
+  dataset lags real support), so the dependency stays `unknown`.
 - **Maintenance signal** — native dependencies the directory marks archived are flagged separately
   (`archived`), since an unmaintained library is a migration risk regardless of its New Arch state.
 
-The roll-up verdict is `ready` (no unknown or archived native dependencies) or `needs-review`.
+The roll-up verdict is `ready` (every native dependency locally confirmed — no `unknown` or
+`likely-supported`) or `needs-review`. Archived libraries are surfaced as a separate maintenance
+warning and do not by themselves change the verdict.
 
 Compatibility and maintenance facts come from the React Native Directory
 (`react-native-community/directory`); this tool reads that public data and attributes it. When

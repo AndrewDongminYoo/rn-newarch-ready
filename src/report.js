@@ -20,9 +20,12 @@ function summarize(dependencies) {
     }
   }
 
-  // archived is a maintenance warning, orthogonal to New Arch readiness; it is
-  // surfaced separately and does not by itself flip the verdict.
-  const verdict = (counts.unknown || 0) > 0 ? "needs-review" : "ready";
+  // `ready` requires every native dep to be locally confirmed. `unknown` (no
+  // signal) and `likely-supported` (directory-only, library-level — verify the
+  // installed version) both warrant review. archived is a maintenance warning,
+  // orthogonal to readiness, and does not by itself flip the verdict.
+  const needsReview = (counts.unknown || 0) > 0 || (counts["likely-supported"] || 0) > 0;
+  const verdict = needsReview ? "needs-review" : "ready";
 
   return { counts, archived, verdict };
 }

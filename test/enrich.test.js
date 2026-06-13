@@ -5,13 +5,15 @@ const { enrichDependency } = require("../src/enrich");
 const dep = (status) => ({ name: "x", version: "1.0.0", status });
 
 describe("enrichDependency", () => {
-  test("an unknown native dep that the directory marks newArchitecture=true becomes supported", () => {
+  test("an unknown native dep the directory marks newArchitecture=true becomes likely-supported (not confirmed)", () => {
     const result = enrichDependency(dep("unknown"), {
       newArchitecture: true,
       isArchived: false,
     });
 
-    expect(result.status).toBe("supported");
+    // A distinct, softer tier than locally-confirmed `supported`: the directory
+    // flag is library-level (repo HEAD), not pinned to the installed version.
+    expect(result.status).toBe("likely-supported");
     expect(result.source).toBe("directory");
   });
 

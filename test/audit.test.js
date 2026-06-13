@@ -38,12 +38,12 @@ describe("audit", () => {
     expect(statusOf(report, "dev-only-tool")).toBeUndefined();
   });
 
-  test("directory data promotes an unknown native dep marked newArchitecture=true", () => {
+  test("directory data promotes an unknown native dep marked newArchitecture=true to likely-supported", () => {
     const directory = new Map([["rn-legacy", { newArchitecture: true, isArchived: false }]]);
 
     const report = audit(DEPS_APP, { directory });
 
-    expect(statusOf(report, "rn-legacy")).toBe("supported");
+    expect(statusOf(report, "rn-legacy")).toBe("likely-supported");
   });
 
   test("directory archived status is surfaced on the dependency", () => {
