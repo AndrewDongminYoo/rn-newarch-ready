@@ -14,8 +14,15 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 1 day
  * only the two flags this tool consumes. Entries without an npm name are
  * skipped (they cannot be matched against a project's dependencies).
  *
- * @param {Array<{ npmPkg?: string, github?: object }>} libraries
- * @returns {Map<string, { newArchitecture: boolean|undefined, isArchived: boolean|undefined }>}
+ * Each flag exists in two places in the payload, and reading only the `github`
+ * half loses most of the data: the curated top-level `newArchitecture` reports
+ * readiness on 931 of 2658 entries (887 `true` plus 44 `new-arch-only`)
+ * against 434 for `github.newArchitecture`, and top-level `unmaintained` is
+ * set on 866 against 140 for `github.isArchived` (measured 2026-08-19). Every `expo-*` package declares the top-level flag
+ * and none carry the github one, so a whole SDK read as `unknown`.
+ *
+ * @param {Array<{ npmPkg?: string, newArchitecture?: boolean|string, unmaintained?: boolean, github?: object }>} libraries
+ * @returns {Map<string, { newArchitecture: boolean|undefined, isArchived: boolean }>}
  */
 function buildDirectoryIndex(libraries) {
   const index = new Map();
@@ -25,11 +32,31 @@ function buildDirectoryIndex(libraries) {
     }
     const gh = lib.github || {};
     index.set(lib.npmPkg, {
-      newArchitecture: gh.newArchitecture,
-      isArchived: gh.isArchived,
+      newArchitecture: resolveNewArchitecture(lib, gh),
+      isArchived: lib.unmaintained === true || gh.isArchived === true,
     });
   }
   return index;
+}
+
+/**
+ * Resolve the two New Architecture signals into one.
+ *
+ * The curated entry value wins wherever it is set, including when it says
+ * `false`; `github.newArchitecture` is repository-detected and fills the 195
+ * entries that declare nothing. `"new-arch-only"` is a stronger form of
+ * `true` — the library runs on the New Architecture and nothing else — so it
+ * collapses to `true` for a readiness audit.
+ */
+function resolveNewArchitecture(lib, gh) {
+  const declared = lib.newArchitecture;
+  if (declared === true || declared === "new-arch-only") {
+    return true;
+  }
+  if (declared === false) {
+    return false;
+  }
+  return gh.newArchitecture;
 }
 
 /**

@@ -31,4 +31,50 @@ describe("buildDirectoryIndex", () => {
     expect(index.size).toBe(1);
     expect(index.has("react-native-svg")).toBe(true);
   });
+
+  test("the curated top-level flag wins over the repository-detected one", () => {
+    const index = buildDirectoryIndex([
+      {
+        npmPkg: "expo-camera",
+        newArchitecture: true,
+        github: { newArchitecture: false, isArchived: false },
+      },
+      {
+        npmPkg: "react-native-razorpay",
+        newArchitecture: false,
+        github: { newArchitecture: true, isArchived: false },
+      },
+    ]);
+
+    expect(index.get("expo-camera").newArchitecture).toBe(true);
+    expect(index.get("react-native-razorpay").newArchitecture).toBe(false);
+  });
+
+  test('"new-arch-only" is a stronger true, not a third state', () => {
+    const index = buildDirectoryIndex([
+      { npmPkg: "react-native-worklets", newArchitecture: "new-arch-only" },
+    ]);
+
+    expect(index.get("react-native-worklets").newArchitecture).toBe(true);
+  });
+
+  test("the repository-detected flag fills entries that declare nothing", () => {
+    const index = buildDirectoryIndex([
+      { npmPkg: "react-native-screens", github: { newArchitecture: true } },
+    ]);
+
+    expect(index.get("react-native-screens").newArchitecture).toBe(true);
+  });
+
+  test("a library marked unmaintained is archived even when its repo is not", () => {
+    const index = buildDirectoryIndex([
+      {
+        npmPkg: "expo-av",
+        unmaintained: true,
+        github: { newArchitecture: false, isArchived: false },
+      },
+    ]);
+
+    expect(index.get("expo-av").isArchived).toBe(true);
+  });
 });
