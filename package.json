@@ -1,6 +1,6 @@
 {
   "name": "rn-newarch-ready",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read-only React Native New Architecture readiness audit — reports which dependencies and native modules block enabling the New Architecture. For React Native.",
   "keywords": [
     "react-native",
