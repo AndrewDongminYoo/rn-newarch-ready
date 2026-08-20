@@ -1,10 +1,16 @@
 # rn-newarch-ready
 
+[![rn-newarch-ready scans a React Native app for New Architecture readiness](https://raw.githubusercontent.com/AndrewDongminYoo/rn-newarch-ready/main/docs/assets/readme-hero.png)](https://rn-toolkits.donminzzi.kr/rn-newarch-ready)
+
+[![npm version](https://img.shields.io/npm/v/rn-newarch-ready?style=flat-square&color=c57417)](https://www.npmjs.com/package/rn-newarch-ready) [![npm downloads](https://img.shields.io/npm/dm/rn-newarch-ready?style=flat-square&color=667085)](https://www.npmjs.com/package/rn-newarch-ready) [![Node.js](https://img.shields.io/node/v/rn-newarch-ready?style=flat-square&color=2f6f44)](package.json) [![license](https://img.shields.io/npm/l/rn-newarch-ready?style=flat-square&color=667085)](LICENSE) [![RN Toolkits](https://img.shields.io/badge/docs-RN_Toolkits-0086aa?style=flat-square)](https://rn-toolkits.donminzzi.kr/rn-newarch-ready)
+
 A **read-only** New Architecture readiness audit for React Native projects.
 Point it at a project and it reports which dependencies and settings would block enabling the New Architecture — it changes nothing.
 
+[Documentation](https://rn-toolkits.donminzzi.kr/rn-newarch-ready) · [npm](https://www.npmjs.com/package/rn-newarch-ready) · [Issues](https://github.com/AndrewDongminYoo/rn-newarch-ready/issues)
+
 This is the **deterministic layer**: it parses, classifies, and reports.
-A separate judgment layer (the `rn-newarch-audit` skill) wraps it to interpret the report and guide remediation.Migration and any code changes are out of scope here by design.
+A separate judgment layer (the `rn-newarch-audit` skill) wraps it to interpret the report and guide remediation. Migration and any code changes are out of scope here by design.
 
 ## Install
 
