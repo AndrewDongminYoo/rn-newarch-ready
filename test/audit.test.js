@@ -82,4 +82,16 @@ describe("audit", () => {
     expect(report.localNativeModules.length).toBe(2);
     expect(report.summary.verdict).toBe("needs-review");
   });
+
+  test("reports legacy API candidates inside installed dependencies", () => {
+    const report = audit(DEPS_APP);
+
+    expect(report.dependencyNativeModules).toEqual([
+      expect.objectContaining({
+        dependency: "rn-legacy",
+        platform: "android",
+        signals: expect.arrayContaining(["ReactContextBaseJavaModule"]),
+      }),
+    ]);
+  });
 });

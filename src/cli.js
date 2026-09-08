@@ -64,6 +64,19 @@ function formatReport(report) {
     lines.push("");
   }
 
+  const dependencyNative = report.dependencyNativeModules || [];
+  if (dependencyNative.length > 0) {
+    lines.push(
+      "Installed dependency native modules with legacy-only API signals (review as migration candidates):",
+    );
+    for (const mod of dependencyNative) {
+      lines.push(
+        `  - ${mod.dependency}: ${mod.path} [${mod.signals.join(", ")}]`,
+      );
+    }
+    lines.push("");
+  }
+
   const likely = dependencies.filter((d) => d.status === "likely-supported");
   if (likely.length > 0) {
     lines.push(

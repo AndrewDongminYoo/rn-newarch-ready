@@ -54,6 +54,24 @@ describe("summarize", () => {
     expect(result.verdict).toBe("needs-review");
   });
 
+  test("dependency legacy candidates drive needs-review", () => {
+    const result = summarize([{ name: "a", status: "supported" }], {
+      dependencyNativeModules: 1,
+    });
+
+    expect(result.verdict).toBe("needs-review");
+    expect(result.dependencyNativeModules).toBe(1);
+  });
+
+  test("not-installed dependencies make the audit incomplete", () => {
+    const result = summarize([
+      { name: "a", status: "supported" },
+      { name: "b", status: "not-installed" },
+    ]);
+
+    expect(result.verdict).toBe("incomplete");
+  });
+
   test("counts archived dependencies but keeps the verdict about readiness only", () => {
     const result = summarize([
       { name: "a", status: "supported", archived: true },

@@ -6,7 +6,10 @@ const path = require("path");
 const { detectProject } = require("./detect");
 const { classifyDependency } = require("./classify");
 const { enrichDependency } = require("./enrich");
-const { scanLocalNativeModules } = require("./nativeScan");
+const {
+  scanDependencyNativeModules,
+  scanLocalNativeModules,
+} = require("./nativeScan");
 const { summarize } = require("./report");
 
 /**
@@ -17,7 +20,7 @@ const { summarize } = require("./report");
  * @param {Map<string, object>} [opts.directory] - React Native Directory index
  *   (npm name -> { newArchitecture, isArchived }); when provided, unknown native
  *   deps may be promoted and archived deps flagged. Omitted -> local signals only.
- * @returns {{ project: object, dependencies: Array<object>, summary: object }}
+ * @returns {{ project: object, dependencies: Array<object>, localNativeModules: Array<object>, dependencyNativeModules: Array<object>, summary: object }}
  */
 function audit(projectDir, opts = {}) {
   const project = detectProject(projectDir);
@@ -30,14 +33,28 @@ function audit(projectDir, opts = {}) {
   }
 
   const directory = opts.directory || null;
-  const dependencies = scanDependencies(projectDir).map((dep) =>
+  const localDependencies = scanDependencies(projectDir);
+  const dependencies = localDependencies.map((dep) =>
     enrichDependency(dep, directory ? directory.get(dep.name) : null),
   );
   const localNativeModules = scanLocalNativeModules(projectDir);
+  const dependencyNativeModules = scanDependencyNativeModules(
+    projectDir,
+    localDependencies
+      .filter((dep) => dep.status === "unknown")
+      .map((dep) => dep.name),
+  );
   const summary = summarize(dependencies, {
+    dependencyNativeModules: dependencyNativeModules.length,
     localNativeModules: localNativeModules.length,
   });
-  return { project, dependencies, localNativeModules, summary };
+  return {
+    project,
+    dependencies,
+    localNativeModules,
+    dependencyNativeModules,
+    summary,
+  };
 }
 
 /**

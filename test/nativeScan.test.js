@@ -1,7 +1,10 @@
 "use strict";
 
 const path = require("path");
-const { scanLocalNativeModules } = require("../src/nativeScan");
+const {
+  scanDependencyNativeModules,
+  scanLocalNativeModules,
+} = require("../src/nativeScan");
 
 const FIXTURES = path.join(__dirname, "fixtures");
 const names = (mods) => mods.map((m) => path.basename(m.path)).sort();
@@ -34,5 +37,18 @@ describe("scanLocalNativeModules", () => {
     const mods = scanLocalNativeModules(path.join(FIXTURES, "basic-app"));
 
     expect(mods).toEqual([]);
+  });
+
+  test("reports legacy API candidates in an installed dependency", () => {
+    const projectDir = path.join(FIXTURES, "deps-app");
+    const mods = scanDependencyNativeModules(projectDir, ["rn-legacy"]);
+
+    expect(mods).toEqual([
+      expect.objectContaining({
+        dependency: "rn-legacy",
+        platform: "android",
+        signals: ["ReactContextBaseJavaModule"],
+      }),
+    ]);
   });
 });

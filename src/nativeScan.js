@@ -42,13 +42,39 @@ const NEWARCH_MARKER =
  */
 function scanLocalNativeModules(projectDir) {
   return [
-    ...scanPlatform(projectDir, "android", ANDROID_EXT, ANDROID_LEGACY),
-    ...scanPlatform(projectDir, "ios", IOS_EXT, IOS_LEGACY),
+    ...scanPlatform(
+      projectDir,
+      projectDir,
+      "android",
+      ANDROID_EXT,
+      ANDROID_LEGACY,
+    ),
+    ...scanPlatform(projectDir, projectDir, "ios", IOS_EXT, IOS_LEGACY),
   ];
 }
 
-function scanPlatform(projectDir, platform, exts, legacyMarkers) {
-  const root = path.join(projectDir, platform);
+function scanDependencyNativeModules(projectDir, dependencyNames) {
+  const out = [];
+  for (const dependency of dependencyNames) {
+    const dependencyDir = path.join(projectDir, "node_modules", dependency);
+    for (const mod of [
+      ...scanPlatform(
+        projectDir,
+        dependencyDir,
+        "android",
+        ANDROID_EXT,
+        ANDROID_LEGACY,
+      ),
+      ...scanPlatform(projectDir, dependencyDir, "ios", IOS_EXT, IOS_LEGACY),
+    ]) {
+      out.push({ dependency, ...mod });
+    }
+  }
+  return out;
+}
+
+function scanPlatform(projectDir, sourceDir, platform, exts, legacyMarkers) {
+  const root = path.join(sourceDir, platform);
   const out = [];
   for (const file of walk(root, exts)) {
     const content = safeRead(file);
@@ -91,4 +117,4 @@ function safeRead(file) {
   }
 }
 
-module.exports = { scanLocalNativeModules };
+module.exports = { scanDependencyNativeModules, scanLocalNativeModules };

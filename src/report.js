@@ -9,8 +9,9 @@
  *
  * @param {Array<{ name: string, status: string, archived?: boolean }>} dependencies
  * @param {object} [opts]
+ * @param {number} [opts.dependencyNativeModules] - count of dependency legacy candidates
  * @param {number} [opts.localNativeModules] - count of app-local legacy native modules
- * @returns {{ counts: Record<string, number>, archived: number, localNativeModules: number, verdict: "ready" | "needs-review" }}
+ * @returns {{ counts: Record<string, number>, archived: number, dependencyNativeModules: number, localNativeModules: number, verdict: "ready" | "needs-review" | "incomplete" }}
  */
 function summarize(dependencies, opts = {}) {
   const counts = {};
@@ -23,15 +24,16 @@ function summarize(dependencies, opts = {}) {
   }
 
   const localNativeModules = opts.localNativeModules || 0;
+  const dependencyNativeModules = opts.dependencyNativeModules || 0;
 
-  // `ready` requires every native dep to be locally confirmed. `unknown` (no
-  // signal) and `likely-supported` (directory-only, library-level — verify the
-  // installed version) both warrant review, as do app-local legacy native
-  // modules. archived is a maintenance warning, orthogonal to readiness, and
-  // does not by itself flip the verdict.
+  // `ready` requires every runtime dependency to be installed and every native
+  // dependency to be locally confirmed. `unknown` (no signal) and
+  // `likely-supported` (directory-only, library-level) both warrant review, as
+  // do legacy API candidates. archived is an orthogonal maintenance warning.
   const needsReview =
     (counts.unknown || 0) > 0 ||
     (counts["likely-supported"] || 0) > 0 ||
+    dependencyNativeModules > 0 ||
     localNativeModules > 0;
   const verdict =
     (counts["not-installed"] || 0) > 0
@@ -40,7 +42,13 @@ function summarize(dependencies, opts = {}) {
         ? "needs-review"
         : "ready";
 
-  return { counts, archived, localNativeModules, verdict };
+  return {
+    counts,
+    archived,
+    dependencyNativeModules,
+    localNativeModules,
+    verdict,
+  };
 }
 
 module.exports = { summarize };
