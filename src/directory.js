@@ -14,12 +14,10 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 1 day
  * only the two flags this tool consumes. Entries without an npm name are
  * skipped (they cannot be matched against a project's dependencies).
  *
- * Each flag exists in two places in the payload, and reading only the `github`
- * half loses most of the data: the curated top-level `newArchitecture` reports
- * readiness on 931 of 2658 entries (887 `true` plus 44 `new-arch-only`)
- * against 434 for `github.newArchitecture`, and top-level `unmaintained` is
- * set on 866 against 140 for `github.isArchived` (measured 2026-08-19). Every `expo-*` package declares the top-level flag
- * and none carry the github one, so a whole SDK read as `unknown`.
+ * Each flag exists in two places in the payload. Reading only the `github`
+ * fields omits curated readiness and maintenance data. The top-level fields
+ * therefore take precedence, and the repository-derived fields act as a
+ * fallback when the curated fields are absent.
  *
  * @param {Array<{ npmPkg?: string, newArchitecture?: boolean|string, unmaintained?: boolean, github?: object }>} libraries
  * @returns {Map<string, { newArchitecture: boolean|undefined, isArchived: boolean }>}
@@ -43,8 +41,8 @@ function buildDirectoryIndex(libraries) {
  * Resolve the two New Architecture signals into one.
  *
  * The curated entry value wins wherever it is set, including when it says
- * `false`; `github.newArchitecture` is repository-detected and fills the 195
- * entries that declare nothing. `"new-arch-only"` is a stronger form of
+ * `false`; `github.newArchitecture` is repository-detected and fills entries
+ * that declare nothing. `"new-arch-only"` is a stronger form of
  * `true` — the library runs on the New Architecture and nothing else — so it
  * collapses to `true` for a readiness audit.
  */
@@ -63,7 +61,7 @@ function resolveNewArchitecture(lib, gh) {
  * Resolve a directory index: served from a fresh local cache when available,
  * otherwise fetched once and cached. Returns `null` on any failure (offline,
  * network error, bad payload) so the audit degrades to local-only signals
- * rather than throwing. I/O seam — not unit tested.
+ * rather than throwing. Invalid response payloads also return `null`.
  *
  * @returns {Promise<Map|null>}
  */
@@ -82,7 +80,10 @@ async function fetchDirectoryIndex(opts = {}) {
       return null;
     }
     const data = await res.json();
-    const libraries = data.libraries || [];
+    if (!data || !Array.isArray(data.libraries)) {
+      return null;
+    }
+    const libraries = data.libraries;
     if (typeof data.total === "number" && libraries.length < data.total) {
       // No silent caps: if the ?limit ever truncates the dataset, say so —
       // the dropped libraries would otherwise read as `unknown`.
