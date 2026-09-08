@@ -21,6 +21,14 @@ const { summarize } = require("./report");
  */
 function audit(projectDir, opts = {}) {
   const project = detectProject(projectDir);
+  if (!project.rnVersion) {
+    const error = new Error(
+      "Project does not declare react-native in package.json",
+    );
+    error.code = "INVALID_PROJECT";
+    throw error;
+  }
+
   const directory = opts.directory || null;
   const dependencies = scanDependencies(projectDir).map((dep) =>
     enrichDependency(dep, directory ? directory.get(dep.name) : null),
@@ -34,8 +42,8 @@ function audit(projectDir, opts = {}) {
 
 /**
  * Read the project's declared dependencies, resolve each from node_modules, and
- * classify it. A declared-but-not-installed dependency is reported as unknown
- * rather than dropped.
+ * classify it. A declared-but-not-installed dependency is reported as
+ * `not-installed` rather than dropped.
  */
 function scanDependencies(projectDir) {
   const pkg = readJson(path.join(projectDir, "package.json")) || {};
@@ -54,7 +62,7 @@ function classifyInstalled(projectDir, name) {
   if (!depPkg) {
     // Declared but not resolved in node_modules — we cannot classify it. This
     // is a distinct fact from "native module with no signal" (unknown), so it
-    // gets its own status and does not drive the readiness verdict.
+    // gets its own status and makes the audit incomplete.
     return { name, version: null, status: "not-installed" };
   }
   const { status } = classifyDependency(depPkg, {

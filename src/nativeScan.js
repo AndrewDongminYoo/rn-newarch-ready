@@ -55,7 +55,9 @@ function scanPlatform(projectDir, platform, exts, legacyMarkers) {
     if (content === null || NEWARCH_MARKER.test(content)) {
       continue;
     }
-    const signals = legacyMarkers.filter((m) => content.includes(m));
+    const signals = legacyMarkers.filter((marker) =>
+      new RegExp(`\\b${marker}\\b`).test(content),
+    );
     if (signals.length > 0) {
       out.push({ path: path.relative(projectDir, file), platform, signals });
     }

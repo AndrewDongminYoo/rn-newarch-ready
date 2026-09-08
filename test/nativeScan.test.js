@@ -27,6 +27,7 @@ describe("scanLocalNativeModules", () => {
 
     expect(kt.platform).toBe("android");
     expect(kt.signals).toContain("ReactContextBaseJavaModule");
+    expect(kt.signals).not.toContain("BaseJavaModule");
   });
 
   test("returns nothing for a project with no app-local native source", () => {

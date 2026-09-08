@@ -22,7 +22,7 @@ async function main(argv) {
     process.stdout.write(`${formatReport(report)}\n`);
   }
 
-  if (report.summary.verdict === "needs-review") {
+  if (report.summary.verdict !== "ready") {
     process.exitCode = 1;
   }
 }
@@ -86,10 +86,22 @@ function formatReport(report) {
     lines.push("");
   }
 
+  const notInstalled = dependencies.filter((d) => d.status === "not-installed");
+  if (notInstalled.length > 0) {
+    lines.push(
+      "Runtime dependencies that are not installed (install and re-run):",
+    );
+    for (const dep of notInstalled) {
+      lines.push(`  - ${dep.name}`);
+    }
+    lines.push("");
+  }
+
   const c = summary.counts;
   lines.push(
     `Summary: ${c.supported || 0} supported, ${c["likely-supported"] || 0} likely, ` +
-      `${c.unknown || 0} unknown, ${c["not-native"] || 0} non-native, ${summary.archived} archived`,
+      `${c.unknown || 0} unknown, ${c["not-installed"] || 0} not installed, ` +
+      `${c["not-native"] || 0} non-native, ${summary.archived} archived`,
   );
   lines.push(`Verdict: ${summary.verdict}`);
   return lines.join("\n");
@@ -104,5 +116,5 @@ function fmt(value) {
 
 main(process.argv).catch((err) => {
   process.stderr.write(`${err && err.stack ? err.stack : err}\n`);
-  process.exitCode = 1;
+  process.exitCode = err && err.code === "INVALID_PROJECT" ? 2 : 1;
 });

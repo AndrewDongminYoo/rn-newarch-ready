@@ -1,0 +1,8 @@
+{
+  "name": "incomplete-app",
+  "version": "1.0.0",
+  "dependencies": {
+    "react-native": "0.76.3",
+    "ghost-lib": "1.0.0"
+  }
+}

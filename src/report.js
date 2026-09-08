@@ -33,7 +33,12 @@ function summarize(dependencies, opts = {}) {
     (counts.unknown || 0) > 0 ||
     (counts["likely-supported"] || 0) > 0 ||
     localNativeModules > 0;
-  const verdict = needsReview ? "needs-review" : "ready";
+  const verdict =
+    (counts["not-installed"] || 0) > 0
+      ? "incomplete"
+      : needsReview
+        ? "needs-review"
+        : "ready";
 
   return { counts, archived, localNativeModules, verdict };
 }

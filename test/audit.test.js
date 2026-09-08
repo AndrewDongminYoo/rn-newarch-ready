@@ -5,6 +5,8 @@ const { audit } = require("../src/index");
 
 const DEPS_APP = path.join(__dirname, "fixtures", "deps-app");
 const NATIVE_APP = path.join(__dirname, "fixtures", "native-app");
+const INCOMPLETE_APP = path.join(__dirname, "fixtures", "incomplete-app");
+const NON_RN_APP = path.join(__dirname, "fixtures", "non-rn-app");
 
 function statusOf(report, name) {
   const dep = report.dependencies.find((d) => d.name === name);
@@ -24,7 +26,20 @@ describe("audit", () => {
     const report = audit(DEPS_APP);
 
     expect(report.project.rnVersion).toBe("0.76.3");
-    expect(report.summary.verdict).toBe("needs-review");
+    expect(report.summary.verdict).toBe("incomplete");
+  });
+
+  test("rejects a project that does not declare react-native", () => {
+    expect(() => audit(NON_RN_APP)).toThrow(
+      "Project does not declare react-native in package.json",
+    );
+  });
+
+  test("reports an incomplete verdict when a runtime dependency is not installed", () => {
+    const report = audit(INCOMPLETE_APP);
+
+    expect(statusOf(report, "ghost-lib")).toBe("not-installed");
+    expect(report.summary.verdict).toBe("incomplete");
   });
 
   test("a declared dependency that is not installed is reported as not-installed", () => {
