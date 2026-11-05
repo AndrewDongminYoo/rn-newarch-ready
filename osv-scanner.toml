@@ -12,3 +12,34 @@ Re-evaluate when Jest or deepmerge changes, and remove this exception when a com
 Advisory: https://github.com/advisories/GHSA-gcqx-w48m-w2h4
 Upstream tracking: https://github.com/TehShrike/deepmerge/issues/273
 """
+
+[[IgnoredVulns]]
+id = "GHSA-3g3m-2fjr-6pw4"
+reason = """
+glob@10.5.0 and glob@13.0.6 have no compatible published patch in their installed major lines as of 2026-11-05.
+The advisory's first patched version is 14.0.2, outside the dependency ranges declared by Jest and test-exclude.
+Dependency evidence: npm ls glob --all shows jest@30.5.2 > @jest/core@30.5.2 > @jest/reporters, jest-config, and jest-runtime > glob@13.0.6, plus @jest/transform > babel-plugin-istanbul@8.0.0 > test-exclude@7.0.2 > glob@10.5.0.
+Reachability evidence: npm ls --omit=dev --all reports an empty runtime dependency graph.
+A node script using a Module._load guard rejected require('glob'), require('minimatch'), and require('deepmerge') as negative controls, then completed audit() for basic-app, deps-app, native-app, expo-app, and ios-app with those package loads blocked.
+Source inspection found synchronous glob calls in Jest's configuration, runtime, and coverage reporters, and synchronous and asynchronous calls in test-exclude.
+This exception accepts residual development-tooling denial-of-service risk rather than claiming that glob or its vulnerable async cancellation path is unreachable in all tooling configurations.
+Approved by Dongmin Yu (AndrewDongminYoo) on 2026-11-05 for GHSA-3g3m-2fjr-6pw4 affecting glob@10.5.0 and glob@13.0.6.
+Re-evaluation owner: Dongmin Yu (AndrewDongminYoo).
+Re-evaluate when Jest, test-exclude, or glob changes, and remove this exception when a compatible patch or dependency path without affected glob versions is available.
+Advisory: https://github.com/advisories/GHSA-3g3m-2fjr-6pw4
+"""
+
+[[IgnoredVulns]]
+id = "GHSA-g3hv-75wg-m249"
+reason = """
+minimatch@9.0.9 and minimatch@10.2.6 have no compatible published patch in their installed major lines as of 2026-11-05.
+The advisory's first patched version is 11.0.1, outside the dependency ranges declared by glob and test-exclude.
+Dependency evidence: npm ls minimatch --all shows glob@13.0.6 and test-exclude@7.0.2 > minimatch@10.2.6, plus test-exclude@7.0.2 > glob@10.5.0 > minimatch@9.0.9, all below Jest development dependencies.
+Reachability evidence: npm ls --omit=dev --all reports an empty runtime dependency graph, and the Module._load guard described above completed five audit() fixtures with minimatch loading blocked after rejecting require('minimatch') as a negative control.
+A node script instrumenting minimatch.Minimatch construction through Module._load confirmed that new (require('test-exclude'))({cwd: process.cwd()}).globSync(require('node:path').resolve('src')) reaches optimizationLevel=2, the condition identified by the advisory.
+This exception accepts reachable development-tooling denial-of-service risk rather than claiming that the vulnerable minimatch code is unreachable.
+Approved by Dongmin Yu (AndrewDongminYoo) on 2026-11-05 for GHSA-g3hv-75wg-m249 affecting minimatch@9.0.9 and minimatch@10.2.6.
+Re-evaluation owner: Dongmin Yu (AndrewDongminYoo).
+Re-evaluate when Jest, test-exclude, glob, or minimatch changes, and remove this exception when a compatible patch or dependency path without affected minimatch versions is available.
+Advisory: https://github.com/advisories/GHSA-g3hv-75wg-m249
+"""
