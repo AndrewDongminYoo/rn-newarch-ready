@@ -40,3 +40,16 @@ Approved on 2026-11-05 for GHSA-g3hv-75wg-m249 affecting minimatch@9.0.9 and min
 Re-evaluate when Jest, test-exclude, glob, or minimatch changes, and remove this exception when a compatible patch or dependency path without affected minimatch versions is available.
 Advisory: https://github.com/advisories/GHSA-g3hv-75wg-m249
 """
+
+[[IgnoredVulns]]
+id = "GHSA-fc5q-39xc-vjpf"
+reason = """
+picomatch@2.3.2 and picomatch@4.0.7 have no patched release as of 2026-11-18.
+GitHub advisory data reports no first patched version for the affected range <= 4.0.7, and npm view picomatch versions ends at 4.0.7.
+Dependency evidence: npm ls picomatch --all shows only jest@30.5.2 > @jest/core@30.5.2 > jest-haste-map@30.5.1 > picomatch@4.0.7 (also via @parcel/watcher, fdir, jest-message-util and jest-util) and jest-haste-map > anymatch@3.1.3 > picomatch@2.3.2.
+Reachability evidence: npm ls picomatch --all --omit=dev is empty, package.json declares no runtime dependencies, npm pack --dry-run lists only LICENSE, README.md, package.json and src/*.js with no bundled dependencies, and src/ has no picomatch, micromatch, fast-glob, tinyglobby or minimatch import.
+Re-evaluate before passing user-supplied glob patterns to any tool.
+Approved on 2026-11-18.
+Remove when a picomatch release outside the affected range is available.
+Advisory: https://github.com/advisories/GHSA-fc5q-39xc-vjpf
+"""
