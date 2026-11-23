@@ -3,8 +3,11 @@ coverage/
 *.log
 .DS_Store
 
+/test/fixtures/**/node_modules/
+/test/fixtures/**/package-lock.json
+
 # Synthetic test fixtures intentionally include a node_modules/ tree; keep it.
-!test/fixtures/**/node_modules/
+!/test/fixtures/deps-app/node_modules/
 
 # Local agent artifacts
 .claude/
